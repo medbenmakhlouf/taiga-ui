@@ -1,8 +1,8 @@
 import {
+    type AfterViewInit,
     ChangeDetectionStrategy,
     Component,
     computed,
-    effect,
     ElementRef,
     inject,
     viewChildren,
@@ -43,7 +43,7 @@ const REQUIRED_ERROR = new Error(ngDevMode ? 'Required dialog was dismissed' : '
         '(click.self)': 'close$.next()',
     },
 })
-export class TuiSheetDialogComponent<I> {
+export class TuiSheetDialogComponent<I> implements AfterViewInit {
     private readonly stops = viewChildren<ElementRef<HTMLElement>>('stops');
     private readonly initial = computed(() => {
         if (!this.context.closable) {
@@ -87,10 +87,8 @@ export class TuiSheetDialogComponent<I> {
         )
         .subscribe(() => this.close());
 
-    constructor() {
-        effect(() => {
-            this.el.scrollTop = this.initial();
-        });
+    public ngAfterViewInit(): void {
+        this.el.scrollTop = this.initial();
     }
 
     protected onPointerChange(delta: number): void {
