@@ -4,7 +4,6 @@ import {outputFromObservable} from '@angular/core/rxjs-interop';
 import {TuiElasticStickyService} from './elastic-sticky.service';
 
 @Directive({
-    standalone: true,
     selector: '[tuiElasticSticky]',
     providers: [TuiElasticStickyService],
     exportAs: 'tuiElasticSticky',
