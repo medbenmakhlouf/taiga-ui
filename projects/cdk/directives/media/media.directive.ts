@@ -1,4 +1,12 @@
-import {Directive, effect, EventEmitter, Input, model, Output} from '@angular/core';
+import {
+    Directive,
+    effect,
+    EventEmitter,
+    Input,
+    input,
+    model,
+    Output,
+} from '@angular/core';
 import {tuiInjectElement} from '@taiga-ui/cdk/utils';
 
 @Directive({
@@ -20,13 +28,17 @@ import {tuiInjectElement} from '@taiga-ui/cdk/utils';
 export class TuiMedia {
     private readonly el = tuiInjectElement<HTMLMediaElement>();
 
-    private playbackRate = 1;
-
     protected readonly setElCurrentTime = effect(() => {
         if (Math.abs(this.currentTime() - this.el.currentTime) > 0.05) {
             this.el.currentTime = this.currentTime();
         }
     });
+
+    protected readonly setElPlaybackRate = effect(() => {
+        this.updatePlaybackRate(this.playbackRate());
+    });
+
+    public readonly playbackRate = input<number>(1);
 
     public readonly volume = model<number>(1);
 
@@ -35,18 +47,13 @@ export class TuiMedia {
     @Output()
     public readonly pausedChange = new EventEmitter<boolean>();
 
-    @Input('playbackRate')
-    public set playbackRateSetter(playbackRate: number) {
-        this.updatePlaybackRate(playbackRate);
-    }
-
     @Input()
     public set paused(paused: boolean) {
         if (paused) {
             this.el.pause?.();
         } else {
             void this.el.play?.();
-            this.updatePlaybackRate(this.playbackRate);
+            this.updatePlaybackRate(this.playbackRate());
         }
     }
 
@@ -56,7 +63,7 @@ export class TuiMedia {
 
     protected onPausedChange(paused: boolean): void {
         this.pausedChange.emit(paused);
-        this.updatePlaybackRate(this.playbackRate);
+        this.updatePlaybackRate(this.playbackRate());
     }
 
     protected onVolumeChange(): void {
@@ -68,7 +75,6 @@ export class TuiMedia {
     }
 
     private updatePlaybackRate(playbackRate: number): void {
-        this.playbackRate = playbackRate;
-        this.el.playbackRate = this.playbackRate;
+        this.el.playbackRate = playbackRate;
     }
 }
